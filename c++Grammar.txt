@@ -433,7 +433,7 @@ conditional-expression:logical-or-expression | logical-or-expression ? expressio
 
 
 78- conditional-expression: logical-or-expression conditional-expression1
-    conditional-expression: ? expression : assignment-expressio | vazio
+    conditional-expression1: ? expression : assignment-expressio | vazio
    
 
 79- assignment-expression: conditional-expression | logical-or-expression assignment-operator assignment-expression | throw-expression
@@ -469,14 +469,14 @@ Regra antiga
 statement-seq:statement | statement-seq statement
 
 87- statement-seq: statement statement-seq1
-    statement-seq: statement statement-sed1 | vazio
+    statement-seq1: statement statement-seq1 | vazio
 
 
 Regra antiga
 selection-statement: if ( condition ) statement | if ( condition ) statement else statement | switch ( condition ) statement
 
 88- selection-statement: if ( condition ) statement selection-statement1 | switch (condition) statement
-    selection-statement: else statement | vazio
+    selection-statement1: else statement | vazio
 
 
 89- condition: expression | type-specifier-seq declarator = assignment-expression
@@ -509,12 +509,10 @@ declaration-seq: declaration | declaration-seq declaration
     declaration-seq1 : declaration declaration-seq1 | vazio
 
 
-95- declaration: block-declaration | function-definition | template-declaration | explicit-instantiation | explicit-specialization | linkage-specification | namespace-definition
-
-Regra antiga - ambiguidade indireta
+95- Regra antiga - ambiguidade indireta
 declaration: block-declaration | function-definition | template-declaration | explicit-instantiation | explicit-specialization | linkage-specification | namespace-definition
 
-96- declaration: decl-specifier-seq declaration1 | declaration1 |template declaration2| declaration2 |linkage-specification |namespace-definition
+declaration: decl-specifier-seq declaration1 | declaration1 |template declaration2| declaration2 |linkage-specification |namespace-definition
 declaration1: block-declaration | function-definition
 declaration2: explicit-instantiation | explicit-specialization | < template-parameter-list > declaration
 
@@ -527,7 +525,7 @@ block-declaration: simple-declaration | asm-definition | namespace-alias-definit
 Regra antiga
 simple-declaration: decl-specifier-seqopt init-declarator-listopt ;
 
-98- simple-declaration: init-declarator-list ; | ;
+98- simple-declaration: decl-specifier-seq simple-declaration1 | simple-declaration1
     simple-declaration1: ; | init-declarator-list ; 
 
 99- static_assert-declaration: static_assert ( constant-expression , string-literal ) ;
@@ -547,8 +545,6 @@ decl-specifier-seq: decl-specifier-seqopt decl-specifier
 
 
 103- function-specifier: inline | virtual | explicit
-
-104- typedef-name: identifier
 
 105- type-specifier: simple-type-specifier | class-specifier | enum-specifier | elaborated-type-specifier | typename-specifier | cv-qualifier
 
@@ -576,9 +572,6 @@ elaborated-type-specifier: class-key ::opt nested-name-specifieropt identifier |
      elaborated-type-specifier2: nested-name-specifier elaborated-type-specifier3 | elaborated-type-specifier3
      elaborated-type-specifier3: identifier | template template-id | template-id
 
-
-109- enum-name: identifier
-
 Regra antiga
 enum-specifier: enum identifieropt{ enumerator-listopt}
 
@@ -600,11 +593,6 @@ enumerator-definition: enumerator | enumerator = constant-expression
 
 113- enumerator: identifier
 
-Regra antiga
-namespace-name: original-namespace-name | namespace-alias
-
-114- namespace-name: identifier
-
 115- original-namespace-name: identifier
 
 Regra antiga
@@ -612,8 +600,6 @@ namespace-definition: named-namespace-definition | unnamed-namespace-definition
 
 116- namespace-definition: namespace namespace-definition1
 namespace-definition1: identifier { namespace-body } | original-namespace-name { namespace-body }| { namespace-body }
-
-117- original-namespace-definition: namespace identifier { namespace-body }
 
 118- namespace-body: declaration-seqopt | vazio
 
@@ -624,7 +610,8 @@ namespace-definition1: identifier { namespace-body } | original-namespace-name {
 Regra antiga
 qualified-namespace-specifier: ::opt nested-name-specifieropt namespace-name
 
-121- qualified-namespace-specifier: :: nested-name-specifieropt namespace-name | nested-name-specifieropt namespace-name
+121- qualified-namespace-specifier: :: qualified-namespace-specifier1 | qualified-namespace-specifier1
+qualified-namespace-specifier1: nested-name-specifieropt namespace-name | namespace-name
 
 Regra antiga
 using-declaration: using typenameopt ::opt nested-name-specifier unqualified-id ; | using :: unqualified-id ;
@@ -662,7 +649,7 @@ init-declarator-list: init-declarator | init-declarator-list , init-declarator
 Regra antiga
 init-declarator: declarator initializeropt
 
-127- init-declarator:declarator
+127- init-declarator:declarator init-declarator1
      init-declarator1: initializer | vazio
 
 128- declarator: direct-declarator | ptr-operator declarator
@@ -689,7 +676,7 @@ cv-qualifier-seq: cv-qualifier cv-qualifier-seqopt
 131- cv-qualifier-seq: cv-qualifier cv-qualifier-seq1
      cv-qualifier-seq1: cv-qualifier-seq | vazio
 
-132-cv-qualifier: const | volatil
+132-cv-qualifier: const | volatile
 
 Regra antiga
 declarator-id: id-expression | ::opt nested-name-specifieropt class-name
@@ -722,8 +709,9 @@ Regra antiga
 direct-abstract-declarator: direct-abstract-declaratoropt | ( parameter-declaration-clause ) cv-qualifier-seqopt exception-specificationopt | direct-abstract-declaratoropt[ constant-expressionopt ] | ( abstract-declarator )
 
 
-137- direct-abstract-declarator: ( abstract-declarator ) direct-abstract-declarator1 | direct-abstract-declarator1 | ( parameter-declaration-clause ) direct-abstract-declarator2 | vazio
-    direct-abstract-declarator1: [ direct-abstract-declarator4
+137- direct-abstract-declarator: ( direct-abstract-declarator0  | direct-abstract-declarator1 | vazio
+    direct-abstract-declarator0: abstract-declarator ) direct-abstract-declarator1 |  parameter-declaration-clause ) direct-abstract-declarator2
+	direct-abstract-declarator1: [ direct-abstract-declarator4
     direct-abstract-declarator2: cv-qualifier-seq direct-abstract-declarator3 | exception-specification direct-abstract-declarator1| direct-abstract-declarator1
     direct-abstract-declarator3: exception-specification direct-abstract-declarator1 | direct-abstract-declarator1
     direct-abstract-declarator4: constant-expression ] direct-abstract-declarator1 | ] direct-abstract-declarator1
@@ -749,7 +737,7 @@ parameter-declaration: decl-specifier-seq declarator | decl-specifier-seq declar
      parameter-declaration1: declarator   parameter-declaration2 | abstract-declarator  parameter-declaration3 |  parameter-declaration3 | vazio
      parameter-declaration2: = assignment-expression | vazio
       parameter-declaration3: = assignment-expression
-
+ 
 
 Regra antiga
 
@@ -781,15 +769,6 @@ initializer-list , initializer-clause
 
 
 Regra antiga
-class-name: identifier|
-
-
-146- class-name: identifier  class-name1
-      class-name1: < class-name2 | vazio
-      class-name2: template-argument-list > | >
-
-
-Regra antiga
 class-specifier: class-head { member-specificationopt }
 
 147- class-specifier: class-head { class-specifier1
@@ -800,7 +779,7 @@ class-head: class-key identifieropt base-clauseopt | class-key nested-name-speci
 
 148- class-head: class-key  class-head1
      class-head1: identifier class-head2 | class-head3 
-     class-head2: base-clause | vazio | nested-name-specifier1 class-head4 | class-head5
+     class-head2: base-clause | vazio | nested-name-specifier1 class-head4 | < class-head5
      class-head3: base-clause | vazio
      class-head4: base-clause | vazio | < class-head5 
      class-head5: template-argument-list > class-head3 | > class-head3
@@ -863,8 +842,7 @@ base-specifier: ::opt nested-name-specifieropt class-name | virtual access-speci
      base-specifier2: access-specifier base-specifier3 | base-specifier3
      base-specifier3:  :: base-specifier4 | base-specifier4
      base-specifier4: nested-name-specifier class-name | class-name
-     base-specifier5: virtual base-specifier6 | base-specifier6
-     base-specifier6: :: base-specifier4 | base-specifier4
+     base-specifier5: virtual base-specifier3 | base-specifier3
 
 159- access-specifier: private | protected | public
 
@@ -941,8 +919,6 @@ template-id: template-name < template-argument-listopt >
 
 172- template-id: template-name < template-id1
      template-id1: template-argument-list > | >
-
-173- template-name: identifier
 
 Regra antiga
 template-argument-list: template-argument | template-argument-list , template-argument

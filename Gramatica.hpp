@@ -5223,7 +5223,7 @@ bool Parser::template_id() {
 
 bool Parser::template_id1() {
 	if (template_argument_list()) {
-		if (compararTokenAtual("TOKEN_LESS_THAN_OPERATOR")) {
+		if (compararTokenAtual("TOKEN_GREATER_THAN_OPERATOR")) {
 			if (template_id1()) {
 				return true;
 			} else {
@@ -5232,7 +5232,7 @@ bool Parser::template_id1() {
 		} else {
 			return false;
 		}
-	} else if (compararTokenAtual("TOKEN_LESS_THAN_OPERATOR")) {
+	} else if (compararTokenAtual("TOKEN_GREATER_THAN_OPERATOR")) {
 		if (template_id1()) {
 			return true;
 		} else {

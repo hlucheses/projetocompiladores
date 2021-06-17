@@ -3,13 +3,14 @@
 #include <cctype>
 #include <iostream>
 #include <fstream>
+#include <clocale>
+#include <ctime>
 
 #include "TabelaDeSimbolos.hpp"
 
 using namespace std;
 
 TabelaDeSimbolos analex(string nomeDoArquivo) {
-	
 	char caractere = 0;
 	char carTemp = 0;
 	string strSimbolo = "";
@@ -18,16 +19,16 @@ TabelaDeSimbolos analex(string nomeDoArquivo) {
 	ifstream arquivo(/*nomeDoArquivo*/"programa.txt");
 	
 	if (!arquivo.is_open()) {
-		cerr << "Impossível abrir o ficheiro - '" << nomeDoArquivo << "'"
-			 << endl;
+		cerr << "Impossível abrir o ficheiro - '" << nomeDoArquivo << "'" << endl;
 		exit(EXIT_FAILURE);
 	}
 	
 	TabelaDeSimbolos tabela;
 	int posLinha = 0;
 	
-	
 	while (arquivo.peek() != EOF) {
+		
+		
 		
 		arquivo.get(caractere);
 		
@@ -270,6 +271,8 @@ TabelaDeSimbolos analex(string nomeDoArquivo) {
 }
 
 int main(void) {
+	setlocale(LC_ALL, "Portuguese");
+	//setlocale((unsigned) time(NULL));
 	string nomeDoArquivo("programa.txt");
 	TabelaDeSimbolos tabela = analex(nomeDoArquivo);
 	tabela.imprimir();

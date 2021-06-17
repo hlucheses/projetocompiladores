@@ -28,7 +28,12 @@ class TabelaDeSimbolos {
 		
 		void add(Simbolo simbolo) {
 			pair<Simbolo, string> par(simbolo, Token::getToken(simbolo.getLexema()));
-			elementos.push_back(par);
+			if (par.second != "TOKEN_MULTIPLE_LINE_COMMENT"
+				&& par.second != "TOKEN_SPACE"
+				&& par.second != "TOKEN_NEW_LINE"
+				&& par.second != "TOKEN_ONE_LINE_COMMENT") {
+				elementos.push_back(par);
+			}
 		}
 		
 		void imprimir(void) {

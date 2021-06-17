@@ -1,5 +1,8 @@
 #include <string>
 #include <cstdlib>
+#include <list>
+#include <utility>
+#include <vector>
 
 
 #ifndef INC_PARSER
@@ -16,11 +19,29 @@ using namespace std;
 
 class Parser {
 	private:
+		vector< pair<string, int> > erros;
 		int indexTabela;
 		list< pair<Simbolo, string> >::iterator iterador;
 	public:
 		Parser() {
 			indexTabela = 0;
+		}
+		
+		void inserirErro(string str, int linha) {
+			pair<string, int> par(str, linha);
+			erros.push_back(par);
+		}
+		
+		void imprimirErros() {
+			cout << endl << endl;
+			
+			for (vector< pair<string, int> >::iterator i = erros.begin();
+					i != erros.end(); ++i) {
+						
+				cout << "[ERRO] " << "Linha " << i->second << ": " << i->first << endl;
+			}
+			
+			cout << endl << endl;
 		}
 		
 		int parse(list< pair<Simbolo, string> > elementos) {
@@ -29,13 +50,19 @@ class Parser {
 		}
 		
 		int program() {
-			//typedef_name();
+			if (unary_operator()) {
+				cout << endl << "PARSING BEM SUCEDIDO";
+			} else {
+				cout << endl << "ERRO AO FAZER O PARSING";
+			}
+			imprimirErros();
 		}
 		
 		void getNextToken() {
-			iterador++;
 			if (iterador->first.getLexema() == "<<EOF>>") {
-				cout << "Fim inesperado";
+				inserirErro("Fim do ficheiro inesperado", iterador->first.getNumeroLinha());
+			} else {
+				iterador++;
 			}
 		}
 		
@@ -43,6 +70,10 @@ class Parser {
 			if (iterador->second == str) {
 				getNextToken();
 				return true;
+			} else if (iterador->second == "TOKEN_UNKNOWN_INVALID_SYMBOL") {
+				getNextToken();
+				inserirErro("Simbolo iválido", iterador->first.getNumeroLinha());
+				return false;
 			} else {
 				return false;
 			}

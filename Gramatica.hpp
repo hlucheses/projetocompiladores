@@ -54,6 +54,7 @@ bool Parser::class_name1() {
 			return false;
 		}
 	} else {
+		inserirErro("Esperava sinal de <", getLinha());
 		return false;
 	}
 }
@@ -63,12 +64,14 @@ bool Parser::class_name2() {
 		if (compararTokenAtual("TOKEN_GREATER_THAN_OPERATOR")) {
 			return true;
 		} else {
+			inserirErro("Esperava >", getLinha());
 			return false;
 		}
-	} else if (compararTokenAtual("TOKEN_GREATER_THAN_OPERATOR")) {
+	}else if (compararTokenAtual("TOKEN_GREATER_THAN_OPERATOR")) {
 		return true;
 	} else {
-		return 0;
+		inserirErro("Esperava template-argument-list ou >", getLinha());
+		return false;
 	}
 }
 
@@ -153,9 +156,11 @@ bool Parser::primary_expression() {
 			if (compararTokenAtual("TOKEN_RIGHT_PARENTHESIS_OPERATOR")) {
 				return true;
 			} else {
+				inserirErro("Esperava )", getLinha());
 				return false;
 			}
 		} else {
+			inserirErro("Esperava expression", getLinha());
 			return false;
 		}
 	} else if (id_expression()) {
@@ -208,11 +213,13 @@ bool Parser::unqualified_id1() {
 		if (class_name()) {
 			return true;
 		} else {
+			inserirErro("Esperava class-name", getLinha());
 			return false;
 		}
 	} else if (template_id()) {
 		return true;
 	} else {
+		inserirErro("Token inesperado após operator", getLinha());
 		return false;
 	}
 }
@@ -238,6 +245,7 @@ bool Parser::qualified_id() {
 	} else {
 		return false;
 	}
+	return false;
 }
 
 bool Parser::qualified_id1() {
@@ -313,6 +321,7 @@ bool Parser::nested_name_specifier1() {
 				return false;
 			}
 		} else {
+			inserirErro("Esperava ::", getLinha());
 			return false;
 		}
 	} else if (compararTokenAtual("TOKEN_SCOPE_QUALIFIER_OEPERATOR")) {
@@ -322,6 +331,7 @@ bool Parser::nested_name_specifier1() {
 			return false;
 		}
 	} else {
+		inserirErro("Esperava ::", getLinha());
 		return false;
 	}
 }
@@ -340,6 +350,9 @@ bool Parser::nested_name_specifier2() {
 			} else {
 				return false;
 			}
+		} else {
+			inserirErro("Esperava identificador", getLinha());
+			return false;
 		}
 	} else {
 		return false;
@@ -366,18 +379,22 @@ bool Parser::nested_name_specifier4() {
 			if (compararTokenAtual("TOKEN_SCOPE_QUALIFIER_OPERATOR")) {
 				return true;
 			} else {
+				inserirErro("Esperava ::", getLinha());
 				return false;
 			}
 		} else {
+			inserirErro("Esperava >", getLinha());
 			return false;
 		}
 	} else if (compararTokenAtual("TOKEN_GREATER_THAN_OPERATOR")) {
 		if (compararTokenAtual("TOKEN_SCOPE_QUALIFIER_OPERATOR")) {
 			return true;
 		} else {
+			inserirErro("Esperava ::", getLinha());
 			return false;
 		}
 	} else {
+		inserirErro("Esperava >", getLinha());
 		return false;
 	}
 }
@@ -1637,7 +1654,7 @@ expression: assignment-expression | expression , assignment-expression
 */
 
 bool Parser::expression() {
-	if (assignment_expression()) {
+	/*if (assignment_expression()) {
 		if (expression1()) {
 			return true;
 		} else {
@@ -1645,7 +1662,8 @@ bool Parser::expression() {
 		}
 	} else {
 		return false;
-	}
+	}*/
+	return false;
 }
 
 bool Parser::expression1() {
@@ -2130,7 +2148,7 @@ declaration-seq: declaration | declaration-seq declaration
 */
 
 bool Parser::declaration_seq() {
-	if (declaration()) {
+	/*if (declaration()) {
 		if (declaration_seq1()) {
 			return true;
 		} else {
@@ -2138,7 +2156,8 @@ bool Parser::declaration_seq() {
 		}
 	} else {
 		return false;
-	}
+	}*/
+	return false;
 }
 
 bool Parser::declaration_seq1() {
@@ -2341,13 +2360,13 @@ bool Parser::decl_specifier() {
 		return true;
 	} else if (type_specifier()) {
 		return true;
-	} else if (function_specifier()) {
+	} /*else if (function_specifier()) {
 		return true;
 	} else if (compararTokenAtual("TOKEN_KEYWORD_FRIEND")) {
 		return true;
 	} else if (compararTokenAtual("TOKEN_KEYWORD_TYPEDEF")) {
 		return true;
-	} else {
+	} */ else {
 		return false;
 	}
 }
@@ -2458,12 +2477,6 @@ bool Parser::simple_type_specifier() {
 		} else {
 			return false;
 		}
-	} else if (nested_name_specifier()) {
-		if (simple_type_specifier2()) {
-			return true;
-		} else {
-			return false;
-		}
 	} else if (compararTokenAtual("TOKEN_KEYWORD_CHAR")
 				|| compararTokenAtual("TOKEN_KEYWORD_WCHAR_T")
 				|| compararTokenAtual("TOKEN_KEYWORD_BOOL")
@@ -2475,7 +2488,13 @@ bool Parser::simple_type_specifier() {
 				|| compararTokenAtual("TOKEN_KEYWORD_DOUBLE")
 				|| compararTokenAtual("TOKEN_KEYWORD_VOID")) {
 		return true;
-	} else {
+	} else if (nested_name_specifier()) {
+		if (simple_type_specifier2()) {
+			return true;
+		} else {
+			return false;
+		}
+	}  else {
 		return false;
 	}
 }
@@ -4627,7 +4646,7 @@ bool Parser::access_specifier() {
 */
 
 bool Parser::conversion_function_id() {
-	if (compararTokenAtual("TOKEN_KEYWORD_OPERATOR")) {
+	/*if (compararTokenAtual("TOKEN_KEYWORD_OPERATOR")) {
 		if (conversion_type_id()) {
 			return true;
 		} else {
@@ -4635,7 +4654,8 @@ bool Parser::conversion_function_id() {
 		}
 	} else {
 		return false;
-	}
+	}*/
+	return false;
 }
 
 /*
@@ -4848,7 +4868,7 @@ operator-function-id: operator operator |operator operator < template-argument-l
 */
 
 bool Parser::operator_function_id() {
-	if (compararTokenAtual("TOKEN_KEYWORD_OPERATOR")) {
+	/*if (compararTokenAtual("TOKEN_KEYWORD_OPERATOR")) {
 		if (_operator()) {
 			if (operator_function_id()) {
 				return true;
@@ -4860,7 +4880,7 @@ bool Parser::operator_function_id() {
 		}
 	} else {
 		return false;
-	}
+	}*/ return false;
 }
 
 bool Parser::operator_function_id1() {
@@ -5206,7 +5226,7 @@ template-id: template-name < template-argument-listopt >
 */
 
 bool Parser::template_id() {
-	if (template_name()) {
+	/*if (template_name()) {
 		if (compararTokenAtual("TOKEN_LESS_THAN_OPERATOR")) {
 			if (template_id1()) {
 				return true;
@@ -5218,7 +5238,7 @@ bool Parser::template_id() {
 		}
 	} else {
 		return false;
-	}
+	}*/
 }
 
 bool Parser::template_id1() {
@@ -5252,7 +5272,7 @@ template-argument-list: template-argument | template-argument-list , template-ar
 */
 
 bool Parser::template_argument_list() {
-	if (template_argument()) {
+	/*if (template_argument()) {
 		if (template_argument_list1()) {
 			return true;
 		} else {
@@ -5260,7 +5280,8 @@ bool Parser::template_argument_list() {
 		}
 	} else {
 		return false;
-	}
+	}*/
+	return false;
 }
 
 bool Parser::template_argument_list1() {
@@ -5657,6 +5678,22 @@ bool Parser::type_id_list1() {
 		return true;
 	} else {
 		return false;
+	}
+}
+
+bool Parser::gambiarra() {
+	if (simple_type_specifier()) {
+		if (compararTokenAtual("TOKEN_IDENTIFIER")) {
+			if (compararTokenAtual("TOKEN_SEMI_COLON_OPERATOR")) {
+				return true;
+			} else {
+				inserirErro("Esperava ; !", iterador->first.getNumeroLinha());
+			}
+		} else {
+			inserirErro("Esperava identificador!", iterador->first.getNumeroLinha());
+		}
+	} else {
+		inserirErro("Esperava tipo de dados!", iterador->first.getNumeroLinha());
 	}
 }
 

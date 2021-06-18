@@ -1,9 +1,11 @@
-*
+::
+//operator ~main<>
 
 /*
 class_name
 class_name1
 class_name2
+-->loop
 template_argument_list
 template_argument
 assignment_expression
@@ -22,4 +24,14 @@ pm_expression
 cast_expression
 type_id
 type_specifier_seq
+type_specifier
+simple_type_specifier
+simple_type_specifier1
+type_name
+type_name1
+type_name2
+-->fim do loop
+
+VERIFICAR REGRAS
+unqualified-id
 */

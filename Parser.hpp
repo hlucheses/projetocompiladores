@@ -21,10 +21,16 @@ class Parser {
 	private:
 		vector< pair<string, int> > erros;
 		int indexTabela;
+		bool flagFim;
 		list< pair<Simbolo, string> >::iterator iterador;
 	public:
 		Parser() {
 			indexTabela = 0;
+			flagFim = false;
+		}
+		
+		int getLinha() {
+			return iterador->first.getNumeroLinha();
 		}
 		
 		void inserirErro(string str, int linha) {
@@ -49,11 +55,11 @@ class Parser {
 			program();
 		}
 		
-		int program() {
-			if (unary_operator()) {
-				cout << endl << "PARSING BEM SUCEDIDO";
+		void program() {
+			if (id_expression()) {
+				cout << "PARSING BEM SUCEDIDO";
 			} else {
-				cout << endl << "ERRO AO FAZER O PARSING";
+				cout << ":(";
 			}
 			imprimirErros();
 		}
@@ -61,6 +67,7 @@ class Parser {
 		void getNextToken() {
 			if (iterador->first.getLexema() == "<<EOF>>") {
 				inserirErro("Fim do ficheiro inesperado", iterador->first.getNumeroLinha());
+				flagFim = true;
 			} else {
 				iterador++;
 			}
@@ -377,6 +384,9 @@ class Parser {
 		bool exception_specification1();
 		bool type_id_list();
 		bool type_id_list1();
+		
+		// Gambiarra;
+		bool gambiarra();
 };
 
 #include "Gramatica.hpp"
